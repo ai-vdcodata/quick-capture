@@ -5,7 +5,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    branch: main
+    branch: master
     buildCommand: npm install && npm run build --workspace=backend
     startCommand: npm run start:backend
     healthCheckPath: /health
@@ -24,9 +24,7 @@ services:
   - type: web
     name: quick-capture-frontend
     runtime: static
-    region: oregon
-    plan: free
-    branch: main
+    branch: master
     buildCommand: npm install && npm run build:frontend
     staticPublishPath: frontend/dist
     envVars:
@@ -35,10 +33,6 @@ services:
           type: web
           name: quick-capture-api
           envVarKey: RENDER_EXTERNAL_URL
-    routes:
-      - type: rewrite
-        source: /api/*
-        destination: https://quick-capture-api.onrender.com/*
     headers:
       - path: /*
         name: X-Frame-Options
