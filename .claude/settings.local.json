@@ -8,7 +8,16 @@
       "Bash(npx tailwindcss init -p)",
       "Bash(git init)",
       "Bash(git add .)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Quick Capture app setup\n\n- Monorepo structure with frontend and backend workspaces\n- Frontend: React + Vite + TypeScript + TailwindCSS\n- Backend: Express + TypeScript + Supabase\n- Database schema for PostgreSQL\n- API endpoints for CRUD operations\n- Environment configuration examples\n- Render deployment configuration\n- Comprehensive documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Quick Capture app setup\n\n- Monorepo structure with frontend and backend workspaces\n- Frontend: React + Vite + TypeScript + TailwindCSS\n- Backend: Express + TypeScript + Supabase\n- Database schema for PostgreSQL\n- API endpoints for CRUD operations\n- Environment configuration examples\n- Render deployment configuration\n- Comprehensive documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(npm run dev)",
+      "Bash(curl http://localhost:3000/health)",
+      "Bash(curl -X GET http://localhost:3000/api/items)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill /F /PID 41180)",
+      "Bash(taskkill //F //PID 41180)",
+      "Bash(git add -A)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix frontend issues for local development\n\n- Downgrade TailwindCSS from v4 to v3 for compatibility\n- Fix TypeScript module exports by disabling verbatimModuleSyntax\n- Add explicit .ts extensions to imports\n- Disable API key requirement for local development\n- Update page title to \"Quick Capture\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

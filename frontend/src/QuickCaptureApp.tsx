@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Calendar, CheckSquare, Edit2, ChevronDown, ChevronUp, X, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Item, ItemType } from './types';
-import { api } from './api';
+import { Item, ItemType } from './types.ts';
+import { api } from './api.ts';
 
 const QuickCaptureApp: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
