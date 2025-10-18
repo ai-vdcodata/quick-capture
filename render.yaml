@@ -1,0 +1,49 @@
+services:
+  # Backend API
+  - type: web
+    name: quick-capture-api
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build --workspace=backend
+    startCommand: npm run start:backend
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: API_KEY
+        generateValue: true
+    autoDeploy: true
+
+  # Frontend Static Site
+  - type: web
+    name: quick-capture-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build:frontend
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: quick-capture-api
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://quick-capture-api.onrender.com/*
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    autoDeploy: true

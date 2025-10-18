@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create vite@latest . -- --template react-ts)",
+      "Bash(npm install)",
+      "Bash(npm install framer-motion lucide-react)",
+      "Bash(npm install -D tailwindcss postcss autoprefixer)",
+      "Bash(npx tailwindcss init -p)",
+      "Bash(git init)",
+      "Bash(git add .)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Quick Capture app setup\n\n- Monorepo structure with frontend and backend workspaces\n- Frontend: React + Vite + TypeScript + TailwindCSS\n- Backend: Express + TypeScript + Supabase\n- Database schema for PostgreSQL\n- API endpoints for CRUD operations\n- Environment configuration examples\n- Render deployment configuration\n- Comprehensive documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
