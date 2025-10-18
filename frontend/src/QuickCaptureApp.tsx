@@ -683,7 +683,7 @@ const QuickCaptureApp: React.FC = () => {
                               const val = e.target.value ? new Date(e.target.value).toISOString() : null;
                               setFormData({ ...formData, start_iso: val });
                             }}
-                            disabled={formData.all_day}
+                            disabled={formData.all_day ?? false}
                             className={`w-full px-3 py-2 border rounded-lg ${
                               errors.start ? 'border-red-500' : 'border-gray-300'
                             } ${formData.all_day ? 'bg-gray-100' : ''}`}
@@ -704,7 +704,7 @@ const QuickCaptureApp: React.FC = () => {
                               const val = e.target.value ? parseInt(e.target.value) : null;
                               setFormData({ ...formData, duration_min: val });
                             }}
-                            disabled={formData.all_day}
+                            disabled={formData.all_day ?? false}
                             className={`w-full px-3 py-2 border rounded-lg ${
                               errors.duration ? 'border-red-500' : 'border-gray-300'
                             } ${formData.all_day ? 'bg-gray-100' : ''}`}
