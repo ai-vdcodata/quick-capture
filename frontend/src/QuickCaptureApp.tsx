@@ -181,76 +181,79 @@ const QuickCaptureApp: React.FC = () => {
 
   const parseNaturalLanguage = useCallback(() => {
     const input = nlInput.toLowerCase();
-    const parsed: Partial<Item> = { ...formData };
 
-    const tagMatches = input.match(/#(\w+)/g);
-    if (tagMatches) {
-      parsed.tags = tagMatches.map(tag => tag.substring(1));
-    }
+    setFormData(prev => {
+      const parsed: Partial<Item> = { ...prev };
 
-    if (input.includes('hard')) {
-      parsed.deadline_type = 'hard';
-    } else if (input.includes('soft')) {
-      parsed.deadline_type = 'soft';
-    }
+      const tagMatches = input.match(/#(\w+)/g);
+      if (tagMatches) {
+        parsed.tags = tagMatches.map(tag => tag.substring(1));
+      }
 
-    const durationMatch = input.match(/(\d+)h(\d+)?m?|(\d+)m/);
-    if (durationMatch) {
-      let minutes = 0;
-      if (durationMatch[1]) {
-        minutes = parseInt(durationMatch[1]) * 60;
-        if (durationMatch[2]) {
-          minutes += parseInt(durationMatch[2]);
+      if (input.includes('hard')) {
+        parsed.deadline_type = 'hard';
+      } else if (input.includes('soft')) {
+        parsed.deadline_type = 'soft';
+      }
+
+      const durationMatch = input.match(/(\d+)h(\d+)?m?|(\d+)m/);
+      if (durationMatch) {
+        let minutes = 0;
+        if (durationMatch[1]) {
+          minutes = parseInt(durationMatch[1]) * 60;
+          if (durationMatch[2]) {
+            minutes += parseInt(durationMatch[2]);
+          }
+        } else if (durationMatch[3]) {
+          minutes = parseInt(durationMatch[3]);
         }
-      } else if (durationMatch[3]) {
-        minutes = parseInt(durationMatch[3]);
+
+        if (itemType === 'task') {
+          parsed.effort_min = minutes;
+        } else {
+          parsed.duration_min = minutes;
+        }
       }
 
-      if (itemType === 'task') {
-        parsed.effort_min = minutes;
-      } else {
-        parsed.duration_min = minutes;
+      const today = new Date();
+
+      if (input.includes('today')) {
+        const dateStr = today.toISOString().split('T')[0];
+        if (itemType === 'task') {
+          parsed.due_date = dateStr;
+        } else {
+          parsed.start_iso = dateStr + 'T09:00:00';
+        }
+      } else if (input.includes('tomorrow')) {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateStr = tomorrow.toISOString().split('T')[0];
+        if (itemType === 'task') {
+          parsed.due_date = dateStr;
+        } else {
+          parsed.start_iso = dateStr + 'T09:00:00';
+        }
       }
-    }
 
-    const today = new Date();
-
-    if (input.includes('today')) {
-      const dateStr = today.toISOString().split('T')[0];
-      if (itemType === 'task') {
-        parsed.due_date = dateStr;
-      } else {
-        parsed.start_iso = dateStr + 'T09:00:00';
+      if (itemType === 'event' && input.includes('all-day')) {
+        parsed.all_day = true;
       }
-    } else if (input.includes('tomorrow')) {
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const dateStr = tomorrow.toISOString().split('T')[0];
-      if (itemType === 'task') {
-        parsed.due_date = dateStr;
-      } else {
-        parsed.start_iso = dateStr + 'T09:00:00';
+
+      let title = input
+        .replace(/#\w+/g, '')
+        .replace(/\b(hard|soft)\b/g, '')
+        .replace(/\d+h?\d*m/g, '')
+        .replace(/\b(today|tomorrow)\b/g, '')
+        .replace(/all-day/g, '')
+        .trim();
+
+      if (title) {
+        parsed.title = title;
       }
-    }
 
-    if (itemType === 'event' && input.includes('all-day')) {
-      parsed.all_day = true;
-    }
-
-    let title = input
-      .replace(/#\w+/g, '')
-      .replace(/\b(hard|soft)\b/g, '')
-      .replace(/\d+h?\d*m/g, '')
-      .replace(/\b(today|tomorrow)\b/g, '')
-      .replace(/all-day/g, '')
-      .trim();
-
-    if (title) {
-      parsed.title = title;
-    }
-
-    setFormData(parsed);
-  }, [nlInput, formData, itemType]);
+      return parsed;
+    });
+  }, [nlInput, itemType]);
 
   const handleTagInputChange = useCallback((value: string) => {
     setTagInput(value);
@@ -268,23 +271,29 @@ const QuickCaptureApp: React.FC = () => {
 
   const addTag = useCallback((tag: string) => {
     const trimmedTag = tag.trim();
-    if (trimmedTag && !formData.tags?.includes(trimmedTag)) {
-      const currentTags = formData.tags || [];
-      setFormData({
-        ...formData,
-        tags: [...currentTags, trimmedTag]
+    if (trimmedTag) {
+      setFormData(prev => {
+        // Check if tag already exists
+        if (prev.tags?.includes(trimmedTag)) {
+          return prev;
+        }
+        const currentTags = prev.tags || [];
+        return {
+          ...prev,
+          tags: [...currentTags, trimmedTag]
+        };
       });
       setTagInput('');
       setTagSuggestions([]);
     }
-  }, [formData]);
+  }, []);
 
   const removeTag = useCallback((tag: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags?.filter(t => t !== tag)
-    });
-  }, [formData]);
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags?.filter(t => t !== tag)
+    }));
+  }, []);
 
   const formatDate = useCallback((dateStr: string | null | undefined) => {
     if (!dateStr) return '';
