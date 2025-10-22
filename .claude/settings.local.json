@@ -17,7 +17,20 @@
       "Bash(taskkill /F /PID 41180)",
       "Bash(taskkill //F //PID 41180)",
       "Bash(git add -A)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nFix frontend issues for local development\n\n- Downgrade TailwindCSS from v4 to v3 for compatibility\n- Fix TypeScript module exports by disabling verbatimModuleSyntax\n- Add explicit .ts extensions to imports\n- Disable API key requirement for local development\n- Update page title to \"Quick Capture\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix frontend issues for local development\n\n- Downgrade TailwindCSS from v4 to v3 for compatibility\n- Fix TypeScript module exports by disabling verbatimModuleSyntax\n- Add explicit .ts extensions to imports\n- Disable API key requirement for local development\n- Update page title to \"Quick Capture\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(gh --version)",
+      "Bash(gh auth status)",
+      "Bash(gh repo create quick-capture --public --source=. --description=\"A lightweight task and event capture application with persistent cloud storage\" --push)",
+      "Bash(git add render.yaml)",
+      "Bash(git commit -m \"Fix render.yaml for static site deployment\")",
+      "Bash(git push)",
+      "Bash(git add frontend/src/QuickCaptureApp.tsx)",
+      "Bash(git commit -m \"Fix TypeScript type errors for disabled prop\")",
+      "Bash(git add frontend/src/api.ts)",
+      "Bash(git commit -m \"Fix API base URL to include /api path in production\")",
+      "Bash(git commit -m \"Remove API_KEY requirement for single-user setup\")",
+      "Bash(gh issue list:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
