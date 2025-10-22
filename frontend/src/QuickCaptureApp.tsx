@@ -14,10 +14,12 @@ const QuickCaptureApp: React.FC = () => {
   const [nlInput, setNlInput] = useState('');
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [syncError, setSyncError] = useState<string>('');
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Item>>({
     title: '',
     tags: [],
+    status: 'Open',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   });
   const [dueType, setDueType] = useState<'date' | 'week'>('date');
@@ -30,9 +32,14 @@ const QuickCaptureApp: React.FC = () => {
     loadData();
   }, []);
 
+  // Reload data when showCompleted changes
+  useEffect(() => {
+    loadData();
+  }, [showCompleted]);
+
   const loadData = async () => {
     setSyncStatus('syncing');
-    const itemsResponse = await api.getItems();
+    const itemsResponse = await api.getItems(showCompleted);
     const tagsResponse = await api.getTags();
 
     if (itemsResponse.success && itemsResponse.data) {
@@ -57,6 +64,7 @@ const QuickCaptureApp: React.FC = () => {
     setFormData({
       title: '',
       tags: [],
+      status: 'Open',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
     setDueType('date');
@@ -324,12 +332,32 @@ const QuickCaptureApp: React.FC = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }, []);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Open': return 'bg-blue-100 text-blue-800';
+      case 'In Progress': return 'bg-yellow-100 text-yellow-800';
+      case 'On Hold': return 'bg-gray-100 text-gray-800';
+      case 'Blocked': return 'bg-red-100 text-red-800';
+      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'Canceled': return 'bg-gray-100 text-gray-500';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Quick Capture</h1>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCompleted(!showCompleted)}
+              className={`px-4 py-2 ${
+                showCompleted ? 'bg-gray-700' : 'bg-gray-500'
+              } text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-colors text-sm`}
+            >
+              {showCompleted ? 'Hide Completed' : 'Show Completed'}
+            </button>
             <button
               onClick={loadData}
               disabled={syncStatus === 'syncing'}
@@ -371,6 +399,10 @@ const QuickCaptureApp: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 hover:bg-gray-50 flex items-center gap-4"
                 >
+                  <div className="flex-shrink-0 text-sm font-mono text-gray-400">
+                    #{item.sequential_id}
+                  </div>
+
                   <div className="flex-shrink-0">
                     {item.type === 'task' ? (
                       <CheckSquare className="w-5 h-5 text-blue-600" />
@@ -380,7 +412,12 @@ const QuickCaptureApp: React.FC = () => {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900">{item.title}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">{item.title}</span>
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    </div>
                     <div className="text-sm text-gray-500">
                       {item.type === 'task' ? (
                         <>
@@ -528,6 +565,26 @@ const QuickCaptureApp: React.FC = () => {
                       )}
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status *
+                      </label>
+                      <select
+                        value={formData.status || 'Open'}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="On Hold">On Hold</option>
+                        <option value="Blocked">Blocked</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Canceled">Canceled</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 mb-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Tags
@@ -879,6 +936,43 @@ const QuickCaptureApp: React.FC = () => {
                             </div>
                           </>
                         )}
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Dependencies (Task IDs)
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.dependencies?.join(', ') || ''}
+                            onChange={(e) => {
+                              const ids = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+                              setFormData({ ...formData, dependencies: ids.length > 0 ? ids : null });
+                            }}
+                            placeholder="e.g., 5, 12, 23 (comma-separated task IDs)"
+                            className="w-full px-3 py-2 border rounded-lg"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Enter sequential IDs of tasks that must be completed before this one
+                          </p>
+                          {items.filter(i => i.status !== 'Completed' && i.status !== 'Canceled' && i.id !== editingItem?.id).length > 0 && (
+                            <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                              <p className="font-medium text-gray-700 mb-1">Available open tasks:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {items
+                                  .filter(i => i.status !== 'Completed' && i.status !== 'Canceled' && i.id !== editingItem?.id)
+                                  .slice(0, 10)
+                                  .map(i => (
+                                    <span key={i.id} className="px-2 py-0.5 bg-white border rounded text-gray-600">
+                                      #{i.sequential_id}: {i.title.substring(0, 20)}{i.title.length > 20 ? '...' : ''}
+                                    </span>
+                                  ))}
+                                {items.filter(i => i.status !== 'Completed' && i.status !== 'Canceled' && i.id !== editingItem?.id).length > 10 && (
+                                  <span className="text-gray-500">+{items.filter(i => i.status !== 'Completed' && i.status !== 'Canceled' && i.id !== editingItem?.id).length - 10} more</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -1,9 +1,12 @@
 export type ItemType = 'task' | 'event';
+export type ItemStatus = 'Open' | 'In Progress' | 'On Hold' | 'Blocked' | 'Completed' | 'Canceled';
 
 export interface Item {
   id: string;
+  sequential_id: number;
   type: ItemType;
   title: string;
+  status: ItemStatus;
   start_iso?: string | null;
   duration_min?: number | null;
   all_day?: boolean | null;

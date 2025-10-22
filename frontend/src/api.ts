@@ -43,11 +43,12 @@ class ApiClient {
     }
   }
 
-  async getItems(): Promise<ApiResponse<Item[]>> {
-    return this.request<Item[]>('/items');
+  async getItems(includeCompleted: boolean = false): Promise<ApiResponse<Item[]>> {
+    const params = includeCompleted ? '?include_completed=true' : '';
+    return this.request<Item[]>(`/items${params}`);
   }
 
-  async createItem(item: Omit<Item, 'id' | 'created_at' | 'updated_at'>): Promise<ApiResponse<Item>> {
+  async createItem(item: Omit<Item, 'id' | 'sequential_id' | 'created_at' | 'updated_at'>): Promise<ApiResponse<Item>> {
     return this.request<Item>('/items', {
       method: 'POST',
       body: JSON.stringify(item),
