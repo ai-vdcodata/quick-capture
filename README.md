@@ -8,7 +8,7 @@ A lightweight task and event capture application with persistent cloud storage. 
 - **Event Tracking**: Schedule events with start times, durations, locations, and attendees
 - **Natural Language Parsing**: Quick entry with phrases like "Draft proposal by Friday 2h hard #work"
 - **Tags & Organization**: Tag items and filter by categories
-- **Rich Metadata**: Add notes, URLs, subtasks, dependencies, and recurrence patterns
+- **Rich Metadata**: Add notes, URLs, dependencies, and recurrence patterns
 - **Cross-Device Sync**: Access your data from anywhere with cloud storage
 - **Real-time Updates**: Changes sync immediately with the backend
 
