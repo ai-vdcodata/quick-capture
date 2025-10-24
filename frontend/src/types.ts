@@ -19,7 +19,6 @@ export interface Item {
   priority?: 1 | 2 | 3 | 4 | 5 | null;
   earliest_start?: string | null;
   recurrence?: string | null;
-  subtasks?: string[] | null;
   dependencies?: string[] | null;
   tags?: string[] | null;
   notes?: string | null;

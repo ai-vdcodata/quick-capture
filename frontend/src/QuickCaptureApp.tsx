@@ -863,22 +863,6 @@ const QuickCaptureApp: React.FC = () => {
                                 className="w-full px-3 py-2 border rounded-lg"
                               />
                             </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Subtasks
-                              </label>
-                              <textarea
-                                value={formData.subtasks?.join('\n') || ''}
-                                onChange={(e) => {
-                                  const lines = e.target.value.split('\n').filter(s => s.trim());
-                                  setFormData({ ...formData, subtasks: lines.length > 0 ? lines : null });
-                                }}
-                                placeholder="One subtask per line"
-                                rows={3}
-                                className="w-full px-3 py-2 border rounded-lg"
-                              />
-                            </div>
                           </>
                         ) : (
                           <>
